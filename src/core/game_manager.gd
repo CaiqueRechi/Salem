@@ -20,27 +20,44 @@ const SettingsMenu = preload("res://src/ui/settings_menu.gd")
 const DebugPanel = preload("res://src/ui/debug_panel.gd")
 const StatusHud = preload("res://src/ui/status_hud.gd")
 
-var settings := AppSettings.new()
-var time_service := TimeService.new()
-var window_manager := DesktopWindowManager.new()
-var pet := PetController.new()
-var cozy_points := CozyPoints.new()
-var unlock_manager := UnlockManager.new()
-var object_manager := ObjectManager.new()
-var random_event_manager := RandomEventManager.new()
-var developer_provider := MockDeveloperActivityProvider.new()
-var system_activity_provider := SystemActivityProvider.new()
-var pomodoro := PomodoroTimer.new()
-var audio_service := AudioService.new()
+var settings
+var time_service
+var window_manager
+var pet
+var cozy_points
+var unlock_manager
+var object_manager
+var random_event_manager
+var developer_provider
+var system_activity_provider
+var pomodoro
+var audio_service
 
-var _interaction_menu := InteractionMenu.new()
-var _settings_menu := SettingsMenu.new()
-var _debug_panel := DebugPanel.new()
-var _status_hud := StatusHud.new()
+var _interaction_menu
+var _settings_menu
+var _debug_panel
+var _status_hud
 var _cozy_timer := Timer.new()
 var _save_debounce := Timer.new()
 
 func _ready() -> void:
+	settings = AppSettings.new()
+	time_service = TimeService.new()
+	window_manager = DesktopWindowManager.new()
+	pet = PetController.new()
+	cozy_points = CozyPoints.new()
+	unlock_manager = UnlockManager.new()
+	object_manager = ObjectManager.new()
+	random_event_manager = RandomEventManager.new()
+	developer_provider = MockDeveloperActivityProvider.new()
+	system_activity_provider = SystemActivityProvider.new()
+	pomodoro = PomodoroTimer.new()
+	audio_service = AudioService.new()
+	_interaction_menu = InteractionMenu.new()
+	_settings_menu = SettingsMenu.new()
+	_debug_panel = DebugPanel.new()
+	_status_hud = StatusHud.new()
+
 	add_child(time_service)
 	add_child(window_manager)
 	add_child(cozy_points)
@@ -61,10 +78,10 @@ func _ready() -> void:
 	unlock_manager.setup()
 	object_manager.setup(unlock_manager)
 	object_manager.object_action_requested.connect(_on_object_action_requested)
+	add_child(pet)
 	pet.setup(time_service)
 	pet.apply_save(data.get("pet", {}))
 	pet.scale = Vector2.ONE * settings.pet_scale
-	add_child(pet)
 	_update_interactive_region()
 
 	random_event_manager.setup(pet.stats, time_service)
@@ -134,7 +151,7 @@ func _connect_events() -> void:
 		_update_interactive_region()
 		_queue_save()
 	)
-	pet.stats.changed.connect(func(_stats: PetStats) -> void: _queue_save())
+	pet.stats.stats_changed.connect(func(_stats) -> void: _queue_save())
 	EventBus.cozy_points_changed.connect(func(_total: int, _delta: int) -> void: _queue_save())
 	EventBus.settings_changed.connect(func(_settings: Dictionary) -> void: _queue_save())
 
@@ -142,7 +159,7 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 		_interaction_menu.show_at(get_viewport().get_mouse_position())
 
-func _on_settings_updated(updated_settings: AppSettings) -> void:
+func _on_settings_updated(updated_settings) -> void:
 	settings = updated_settings
 	pet.scale = Vector2.ONE * settings.pet_scale
 	window_manager.apply_settings(settings)
@@ -253,6 +270,6 @@ func _vector2i_from_array(value: Variant) -> Vector2i:
 func _update_interactive_region() -> void:
 	if not pet.is_inside_tree() or not window_manager.is_inside_tree():
 		return
-	var size := Vector2(112.0, 120.0) * settings.pet_scale
+	var size: Vector2 = Vector2(112.0, 120.0) * float(settings.pet_scale)
 	window_manager.set_interactive_region(Rect2(pet.position - size * 0.5, size))
 	window_manager.set_mouse_passthrough(settings.mouse_passthrough_enabled)

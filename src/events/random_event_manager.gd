@@ -8,10 +8,10 @@ const RandomEvent = preload("res://src/events/random_event.gd")
 var _events: Array[RandomEvent] = []
 var _rng := RandomNumberGenerator.new()
 var _timer := Timer.new()
-var _stats: PetStats
-var _time_service: TimeService
+var _stats
+var _time_service
 
-func setup(stats: PetStats, time_service: TimeService) -> void:
+func setup(stats, time_service) -> void:
 	_stats = stats
 	_time_service = time_service
 	_rng.randomize()
@@ -39,7 +39,7 @@ func _process(delta: float) -> void:
 func _roll_events() -> void:
 	if _stats == null or _time_service == null:
 		return
-	var period := _time_service.get_period_name()
+	var period: String = _time_service.get_period_name()
 	for event in _events:
 		if event.can_trigger(_stats.mood, period) and _rng.randf() <= event.probability:
 			event.mark_triggered()
@@ -49,4 +49,4 @@ func _roll_events() -> void:
 func _emit_event(event_id: String) -> void:
 	event_selected.emit(event_id)
 	EventBus.random_event_triggered.emit(event_id)
-	Logger.info(Logger.Category.EVENT, "Random event triggered: %s" % event_id)
+	AppLog.info(AppLog.Category.EVENT, "Random event triggered: %s" % event_id)

@@ -45,8 +45,8 @@ func get_duration_for_state(state_id: String, rng: RandomNumberGenerator) -> flo
 
 func calculate_next_state(
 	current_state: String,
-	stats: PetStats,
-	personality: PersonalityProfile,
+	stats,
+	personality,
 	time_period: String,
 	rng: RandomNumberGenerator
 ) -> String:

@@ -1,6 +1,8 @@
 extends PanelContainer
 class_name DebugPanel
 
+const PetBehaviourConfig = preload("res://src/pet/pet_behaviour_config.gd")
+
 signal mood_requested(mood: String)
 signal state_requested(state_id: String)
 signal cozy_points_requested(amount: int)

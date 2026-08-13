@@ -1,7 +1,7 @@
 extends Resource
 class_name PetStats
 
-signal changed(stats: PetStats)
+signal stats_changed(stats)
 signal mood_changed(previous_mood: String, next_mood: String)
 
 const MIN_VALUE := 0.0
@@ -12,7 +12,7 @@ const MAX_VALUE := 100.0
 @export_range(0.0, 100.0, 0.5) var affection := 45.0
 @export var mood := "neutral"
 
-func tick(minutes: float, personality: PersonalityProfile) -> void:
+func tick(minutes: float, personality) -> void:
 	var hunger_decay := 0.22 * minutes
 	var energy_decay := 0.12 * minutes
 	var affection_decay := 0.04 * minutes
@@ -21,32 +21,32 @@ func tick(minutes: float, personality: PersonalityProfile) -> void:
 	energy = clampf(energy - energy_decay, MIN_VALUE, MAX_VALUE)
 	affection = clampf(affection - affection_decay, MIN_VALUE, MAX_VALUE)
 	_recalculate_mood(personality)
-	changed.emit(self)
+	stats_changed.emit(self)
 
-func feed(amount := 22.0, personality: PersonalityProfile = null) -> void:
+func feed(amount := 22.0, personality = null) -> void:
 	hunger = clampf(hunger + amount, MIN_VALUE, MAX_VALUE)
 	if personality != null:
 		_recalculate_mood(personality)
-	changed.emit(self)
+	stats_changed.emit(self)
 
-func pet(amount := 10.0, personality: PersonalityProfile = null) -> void:
+func pet(amount := 10.0, personality = null) -> void:
 	affection = clampf(affection + amount, MIN_VALUE, MAX_VALUE)
 	if personality != null:
 		_recalculate_mood(personality)
-	changed.emit(self)
+	stats_changed.emit(self)
 
-func play(personality: PersonalityProfile = null) -> void:
+func play(personality = null) -> void:
 	affection = clampf(affection + 8.0, MIN_VALUE, MAX_VALUE)
 	energy = clampf(energy - 8.0, MIN_VALUE, MAX_VALUE)
 	if personality != null:
 		_recalculate_mood(personality)
-	changed.emit(self)
+	stats_changed.emit(self)
 
-func rest(amount := 12.0, personality: PersonalityProfile = null) -> void:
+func rest(amount := 12.0, personality = null) -> void:
 	energy = clampf(energy + amount, MIN_VALUE, MAX_VALUE)
 	if personality != null:
 		_recalculate_mood(personality)
-	changed.emit(self)
+	stats_changed.emit(self)
 
 func to_dictionary() -> Dictionary:
 	return {
@@ -61,13 +61,13 @@ func apply_dictionary(data: Dictionary) -> void:
 	hunger = clampf(float(data.get("hunger", hunger)), MIN_VALUE, MAX_VALUE)
 	affection = clampf(float(data.get("affection", affection)), MIN_VALUE, MAX_VALUE)
 	mood = str(data.get("mood", mood))
-	changed.emit(self)
+	stats_changed.emit(self)
 
-func recalculate_mood(personality: PersonalityProfile) -> void:
+func recalculate_mood(personality) -> void:
 	_recalculate_mood(personality)
-	changed.emit(self)
+	stats_changed.emit(self)
 
-func _recalculate_mood(personality: PersonalityProfile) -> void:
+func _recalculate_mood(personality) -> void:
 	var previous := mood
 	if hunger < 26.0:
 		mood = "hungry"

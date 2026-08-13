@@ -29,7 +29,7 @@ func setup(time_service: Node) -> void:
 
 	state_machine.setup(behaviour_config, stats, personality, time_service)
 	state_machine.state_changed.connect(_on_state_changed)
-	stats.changed.connect(_on_stats_changed)
+	stats.stats_changed.connect(_on_stats_changed)
 	stats.mood_changed.connect(_on_mood_changed)
 	EventBus.developer_event_received.connect(_on_developer_event)
 
@@ -97,7 +97,7 @@ func _on_state_changed(_previous_state: String, next_state: String) -> void:
 	elif next_state == "sleep":
 		stats.rest(4.0, personality)
 
-func _on_stats_changed(updated_stats: PetStats) -> void:
+func _on_stats_changed(updated_stats) -> void:
 	_view.mood = updated_stats.mood
 	EventBus.pet_stats_changed.emit(updated_stats.to_dictionary())
 

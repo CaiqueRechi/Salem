@@ -8,7 +8,7 @@ config/icon="res://assets/icon.svg"
 
 [autoload]
 EventBus="*res://src/core/event_bus.gd"
-Logger="*res://src/core/logger.gd"
+AppLog="*res://src/core/logger.gd"
 SaveManager="*res://src/core/save_manager.gd"
 
 [display]

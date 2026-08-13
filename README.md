@@ -49,7 +49,7 @@ The configured entrypoint is already set in `project.godot`.
 With Godot available in your PATH:
 
 ```text
-godot --headless --path . --script res://tests/domain_smoke_test.gd
+godot --headless --path . --script res://tests/domain_cli_test.gd
 ```
 
 ## Controls

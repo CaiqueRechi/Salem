@@ -1,17 +1,19 @@
 extends Node
 class_name PetStateMachine
 
+const PetBehaviourConfig = preload("res://src/pet/pet_behaviour_config.gd")
+
 signal state_changed(previous_state: String, next_state: String)
 
 var current_state := "idle"
-var _config: PetBehaviourConfig
-var _stats: PetStats
-var _personality: PersonalityProfile
+var _config
+var _stats
+var _personality
 var _rng := RandomNumberGenerator.new()
 var _time_service: Node
 var _state_timer: Timer
 
-func setup(config: PetBehaviourConfig, stats: PetStats, personality: PersonalityProfile, time_service: Node) -> void:
+func setup(config, stats, personality, time_service: Node) -> void:
 	_config = config
 	_stats = stats
 	_personality = personality
@@ -35,7 +37,7 @@ func _choose_next_state() -> void:
 	var period_name := "afternoon"
 	if _time_service != null and _time_service.has_method("get_period_name"):
 		period_name = _time_service.get_period_name()
-	var next_state := _config.calculate_next_state(current_state, _stats, _personality, period_name, _rng)
+	var next_state: String = _config.calculate_next_state(current_state, _stats, _personality, period_name, _rng)
 	_set_state(next_state)
 	_restart_timer()
 
@@ -46,7 +48,7 @@ func _set_state(next_state: String) -> void:
 	current_state = next_state
 	state_changed.emit(previous, next_state)
 	EventBus.pet_state_changed.emit(previous, next_state)
-	Logger.info(Logger.Category.STATE, "%s -> %s" % [previous, next_state])
+	AppLog.info(AppLog.Category.STATE, "%s -> %s" % [previous, next_state])
 
 func _restart_timer() -> void:
 	if _state_timer == null or _config == null:

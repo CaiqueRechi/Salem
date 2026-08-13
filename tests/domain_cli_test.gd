@@ -1,17 +1,21 @@
-extends Node
+extends SceneTree
+
+const PetBehaviourConfig = preload("res://src/pet/pet_behaviour_config.gd")
+const PetStats = preload("res://src/pet/pet_stats.gd")
+const PersonalityProfile = preload("res://src/pet/personality_profile.gd")
+const RandomEvent = preload("res://src/events/random_event.gd")
+const TimeService = preload("res://src/core/time_service.gd")
+const SaveManagerScript = preload("res://src/core/save_manager.gd")
 
 var _failures := 0
 
-func _ready() -> void:
+func _initialize() -> void:
 	_test_mood_calculation()
 	_test_weighted_state_selection()
 	_test_random_event_conditions()
 	_test_time_periods()
 	_test_save_default_merge()
-	call_deferred("_finish")
-
-func _finish() -> void:
-	get_tree().quit(_failures)
+	quit(_failures)
 
 func _test_mood_calculation() -> void:
 	var stats = PetStats.new()
@@ -42,7 +46,7 @@ func _test_time_periods() -> void:
 	_expect(time_service.get_period_name(time_service.get_period_for_hour(14)) == "afternoon", "14:00 should be afternoon.")
 
 func _test_save_default_merge() -> void:
-	var save_manager = SaveManager.new()
+	var save_manager = SaveManagerScript.new()
 	var merged: Dictionary = save_manager._merge_defaults({"a": {"b": 1}, "c": 2}, {"a": {"d": 3}})
 	_expect(merged["a"]["b"] == 1 and merged["a"]["d"] == 3 and merged["c"] == 2, "Save merge should keep nested defaults.")
 

@@ -16,7 +16,7 @@ const EVENTS := [
 
 func emit_developer_event(event_id: String, payload := {}) -> void:
 	if not EVENTS.has(event_id):
-		Logger.warn(Logger.Category.INTEGRATION, "Unknown developer event: %s" % event_id)
+		AppLog.warn(AppLog.Category.INTEGRATION, "Unknown developer event: %s" % event_id)
 		return
 	developer_event.emit(event_id, payload)
 	EventBus.developer_event_received.emit(event_id, payload)

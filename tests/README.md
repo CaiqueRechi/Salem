@@ -5,7 +5,7 @@ The MVP includes a small headless smoke test for domain rules.
 Run it with Godot installed:
 
 ```text
-godot --headless --path . --script res://tests/domain_smoke_test.gd
+godot --headless --path . --script res://tests/domain_cli_test.gd
 ```
 
 The test covers:

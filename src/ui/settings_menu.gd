@@ -1,11 +1,11 @@
 extends PanelContainer
 class_name SettingsMenu
 
-signal settings_updated(settings: AppSettings)
+signal settings_updated(settings)
 signal reset_position_requested()
 signal reset_save_requested()
 
-var _settings: AppSettings
+var _settings
 var _scale_slider: HSlider
 var _always_on_top: CheckBox
 var _sounds: CheckBox
@@ -19,7 +19,7 @@ func _ready() -> void:
 	position = Vector2(16, 16)
 	_build()
 
-func bind(settings: AppSettings) -> void:
+func bind(settings) -> void:
 	_settings = settings
 	_refresh()
 

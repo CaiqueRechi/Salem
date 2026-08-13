@@ -7,7 +7,7 @@ const InteractiveObject = preload("res://src/objects/interactive_object.gd")
 
 var _objects := {}
 
-func setup(unlock_manager: UnlockManager) -> void:
+func setup(unlock_manager) -> void:
 	for child in get_children():
 		child.queue_free()
 	_objects.clear()
@@ -22,7 +22,7 @@ func trigger_object_action(object_id: String) -> void:
 	EventBus.emit_notification("%s unlocked action: %s" % [object.display_name, object.unlocks_action])
 	object_action_requested.emit(object.object_id, object.unlocks_action)
 
-func _add_if_unlocked(unlock_manager: UnlockManager, object_id: String, label: String, action: String, object_position: Vector2, color: Color) -> void:
+func _add_if_unlocked(unlock_manager, object_id: String, label: String, action: String, object_position: Vector2, color: Color) -> void:
 	if not unlock_manager.is_unlocked(object_id):
 		return
 	var object := InteractiveObject.new()

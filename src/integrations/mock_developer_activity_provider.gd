@@ -1,4 +1,4 @@
-extends DeveloperActivityProvider
+extends "res://src/integrations/developer_activity_provider.gd"
 class_name MockDeveloperActivityProvider
 
 func trigger_commit_created() -> void:

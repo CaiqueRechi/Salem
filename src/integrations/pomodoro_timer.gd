@@ -3,18 +3,18 @@ class_name PomodoroTimer
 
 signal phase_changed(phase: String)
 
-var settings: AppSettings
+var settings
 var _timer := Timer.new()
 var _phase := "work"
 
-func setup(app_settings: AppSettings) -> void:
+func setup(app_settings) -> void:
 	settings = app_settings
 	_timer.one_shot = true
 	_timer.timeout.connect(_on_timeout)
 	add_child(_timer)
 	_apply_settings()
 
-func apply_settings(app_settings: AppSettings) -> void:
+func apply_settings(app_settings) -> void:
 	settings = app_settings
 	_apply_settings()
 
