@@ -1,0 +1,19 @@
+# Godot
+.godot/
+.import/
+export_presets.cfg
+
+# Build outputs
+build/
+dist/
+*.exe
+*.pck
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Local runtime
+*.log
+save.json
+.codex_git_index*
