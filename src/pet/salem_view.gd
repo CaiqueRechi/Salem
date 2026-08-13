@@ -1,9 +1,34 @@
 extends Node2D
 class_name SalemView
 
+const SPRITE_ROOT := "res://assets/pets/salem/sprites/salem_sprite_collection_v1/salem_sprite_collection_v1"
+const ANIMATION_FOLDERS := {
+	"idle": "idle",
+	"walk": "walk",
+	"sit": "sit",
+	"sleep": "sleep",
+	"eat": "eat",
+	"play": "play",
+	"stretch": "stretch",
+	"curious": "curious",
+	"judge": "judge"
+}
+const ANIMATION_SPEEDS := {
+	"idle": 3.0,
+	"walk": 8.0,
+	"sit": 4.0,
+	"sleep": 2.0,
+	"eat": 7.0,
+	"play": 8.0,
+	"stretch": 6.0,
+	"curious": 4.0,
+	"judge": 7.0
+}
+
 var state_id := "idle":
 	set(value):
 		state_id = value
+		_play_animation()
 		queue_redraw()
 
 var mood := "neutral":
@@ -13,8 +38,20 @@ var mood := "neutral":
 
 var _blink_timer := 0.0
 var _eyes_closed := false
+var _sprite := AnimatedSprite2D.new()
+var _uses_sprite_frames := false
+
+func _ready() -> void:
+	_sprite.centered = true
+	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	add_child(_sprite)
+	_uses_sprite_frames = _load_sprite_frames()
+	_sprite.visible = _uses_sprite_frames
+	_play_animation()
 
 func _process(delta: float) -> void:
+	if _uses_sprite_frames:
+		return
 	if state_id == "sleep":
 		return
 	_blink_timer -= delta
@@ -24,6 +61,8 @@ func _process(delta: float) -> void:
 		queue_redraw()
 
 func _draw() -> void:
+	if _uses_sprite_frames:
+		return
 	var body_color := Color("#533D64")
 	var accent := Color("#DB633A")
 	var eye := Color("#FFECA5")
@@ -66,3 +105,51 @@ func _draw() -> void:
 		draw_string(font, Vector2(27, -22), "?", HORIZONTAL_ALIGNMENT_LEFT, -1, 18, eye)
 	elif state_id == "play":
 		draw_circle(Vector2(34, 15), 5, Color("#FFECA5"))
+	elif state_id == "judge":
+		draw_line(Vector2(24, 12), Vector2(38, 8), Color("#FFECA5"), 2.0)
+		draw_string(font, Vector2(26, -24), "...", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, eye)
+
+func _load_sprite_frames() -> bool:
+	var frames := SpriteFrames.new()
+	var loaded_any := false
+	for animation_name in ANIMATION_FOLDERS.keys():
+		var folder_path := "%s/%s" % [SPRITE_ROOT, ANIMATION_FOLDERS[animation_name]]
+		var files := DirAccess.get_files_at(folder_path)
+		var animation_loaded := false
+		files.sort()
+		frames.add_animation(animation_name)
+		frames.set_animation_loop(animation_name, true)
+		frames.set_animation_speed(animation_name, float(ANIMATION_SPEEDS.get(animation_name, 6.0)))
+		for file_name in files:
+			if not file_name.to_lower().ends_with(".png"):
+				continue
+			if file_name.to_lower().ends_with("_sheet.png"):
+				continue
+			var texture := _load_texture("%s/%s" % [folder_path, file_name])
+			if texture == null:
+				continue
+			frames.add_frame(animation_name, texture)
+			animation_loaded = true
+			loaded_any = true
+		if not animation_loaded:
+			frames.remove_animation(animation_name)
+
+	if loaded_any:
+		_sprite.sprite_frames = frames
+	return loaded_any
+
+func _load_texture(resource_path: String) -> Texture2D:
+	var image := Image.new()
+	var error := image.load(ProjectSettings.globalize_path(resource_path))
+	if error != OK:
+		return null
+	return ImageTexture.create_from_image(image)
+
+func _play_animation() -> void:
+	if not _uses_sprite_frames or _sprite.sprite_frames == null:
+		return
+	var animation_name := state_id
+	if not _sprite.sprite_frames.has_animation(animation_name):
+		animation_name = "idle"
+	if _sprite.animation != animation_name:
+		_sprite.play(animation_name)

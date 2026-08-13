@@ -18,7 +18,8 @@ func setup(stats, time_service) -> void:
 	_events = [
 		RandomEvent.new("zoomies", 0.32, 80.0, ["playful", "happy", "curious"], []),
 		RandomEvent.new("stare_into_void", 0.28, 120.0, ["curious", "neutral"], ["late_night", "night"]),
-		RandomEvent.new("random_sleep", 0.16, 180.0, ["sleepy", "neutral"], [])
+		RandomEvent.new("random_sleep", 0.16, 180.0, ["sleepy", "neutral"], []),
+		RandomEvent.new("code_review_judgement", 0.14, 210.0, ["grumpy", "curious", "neutral"], [])
 	]
 	_timer.wait_time = 15.0
 	_timer.timeout.connect(_roll_events)

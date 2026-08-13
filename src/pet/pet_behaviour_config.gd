@@ -1,7 +1,7 @@
 extends Resource
 class_name PetBehaviourConfig
 
-const STATES := ["idle", "walk", "sit", "sleep", "eat", "play", "stretch", "curious"]
+const STATES := ["idle", "walk", "sit", "sleep", "eat", "play", "stretch", "curious", "judge"]
 
 @export var base_state_weights := {
 	"idle": 18.0,
@@ -11,7 +11,8 @@ const STATES := ["idle", "walk", "sit", "sleep", "eat", "play", "stretch", "curi
 	"eat": 8.0,
 	"play": 10.0,
 	"stretch": 8.0,
-	"curious": 12.0
+	"curious": 12.0,
+	"judge": 3.0
 }
 
 @export var mood_modifiers := {
@@ -20,7 +21,7 @@ const STATES := ["idle", "walk", "sit", "sleep", "eat", "play", "stretch", "curi
 	"playful": {"play": 28.0, "walk": 10.0, "curious": 8.0, "sleep": -6.0},
 	"curious": {"curious": 25.0, "walk": 8.0, "play": 4.0},
 	"hungry": {"eat": 30.0, "walk": 6.0, "sleep": -8.0},
-	"grumpy": {"sit": 16.0, "sleep": 12.0, "play": -10.0},
+	"grumpy": {"judge": 20.0, "sit": 16.0, "sleep": 12.0, "play": -10.0},
 	"neutral": {}
 }
 
@@ -32,7 +33,8 @@ const STATES := ["idle", "walk", "sit", "sleep", "eat", "play", "stretch", "curi
 	"eat": Vector2(3.0, 5.0),
 	"play": Vector2(2.0, 4.5),
 	"stretch": Vector2(2.0, 3.5),
-	"curious": Vector2(3.0, 6.0)
+	"curious": Vector2(3.0, 6.0),
+	"judge": Vector2(4.0, 6.0)
 }
 
 @export var cozy_points_per_active_minute := 1.0
@@ -59,6 +61,7 @@ func calculate_next_state(
 	weights["sleep"] = maxf(0.0, float(weights["sleep"]) + personality.sleepiness * 10.0)
 	weights["curious"] = maxf(0.0, float(weights["curious"]) + personality.curiosity * 14.0)
 	weights["walk"] = maxf(0.0, float(weights["walk"]) + personality.chaos * 8.0)
+	weights["judge"] = maxf(0.0, float(weights["judge"]) + personality.chaos * 4.0)
 
 	if time_period == "night" or time_period == "late_night":
 		weights["sleep"] += 18.0

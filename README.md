@@ -8,7 +8,7 @@ Salem.exe is a cozy 2D desktop companion built with Godot. The MVP focuses on a 
 
 - Borderless transparent desktop window configured for always-on-top mode.
 - Draggable pet with saved position.
-- Configurable finite state machine with `idle`, `walk`, `sit`, `sleep`, `eat`, `play`, `stretch`, and `curious`.
+- Configurable finite state machine with `idle`, `walk`, `sit`, `sleep`, `eat`, `play`, `stretch`, `curious`, and `judge`.
 - Non-punitive needs: energy, hunger, affection, and mood.
 - Personality profile that changes behaviour weights.
 - Cozy Points progression.
@@ -18,15 +18,16 @@ Salem.exe is a cozy 2D desktop companion built with Godot. The MVP focuses on a 
 - Mock developer activity provider for commit, tests passed, tests failed, and break events.
 - Optional Pomodoro timer that can request breaks.
 - Placeholder audio service with cue names ready for royalty-free assets.
+- Runtime sprite loading from the organized Salem 64x64 sprite collection.
 - Local JSON persistence with save versioning and safe fallbacks.
 - Settings menu and debug panel for development builds.
 
 ## Placeholder Screenshot
 
-The current MVP uses generated placeholder shapes drawn in Godot. Final sprites can be added later under:
+The current MVP loads 64x64 PNG sprites when available and falls back to generated placeholder shapes. Salem's current sprite collection lives under:
 
 ```text
-assets/pets/salem/sprites/
+assets/pets/salem/sprites/salem_sprite_collection_v1/salem_sprite_collection_v1/
 ```
 
 ## Requirements

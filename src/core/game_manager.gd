@@ -184,6 +184,10 @@ func _on_random_event(event_id: String) -> void:
 		"random_sleep":
 			pet.force_state("sleep")
 			EventBus.emit_notification("Salem chose a very logical nap spot.")
+		"code_review_judgement":
+			pet.force_state("judge")
+			cozy_points.add_points(2)
+			EventBus.emit_notification("Salem files a claw and judges that red test.")
 
 func _on_object_action_requested(object_id: String, action_id: String) -> void:
 	match action_id:

@@ -11,6 +11,7 @@ eat
 play
 stretch
 curious
+judge
 ```
 
 The next state is selected by `PetBehaviourConfig.calculate_next_state()`.
@@ -48,6 +49,10 @@ neutral
 ```
 
 Mood calculation is centralized in `PetStats`.
+
+## Special Animation
+
+`judge` is Salem filing his claws while judging a suspiciously red test result. It is currently triggered by `tests_failed` and the `code_review_judgement` random event.
 
 ## Personality
 

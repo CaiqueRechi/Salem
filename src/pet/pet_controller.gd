@@ -111,7 +111,7 @@ func _on_developer_event(event_id: String, _payload: Dictionary) -> void:
 			force_state("play")
 		"tests_failed":
 			set_mood("grumpy")
-			force_state("sit")
+			force_state("judge")
 		"break_recommended":
 			set_mood("sleepy")
 			force_state("stretch")

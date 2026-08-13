@@ -24,4 +24,4 @@ Both are intentionally tiny. If profiling later shows idle CPU cost, cooldowns c
 
 ## Rendering
 
-The placeholder pet is drawn with simple 2D primitives. Final sprites should use small textures and avoid expensive shader effects.
+Salem uses small 64x64 PNG sprites through `AnimatedSprite2D` when the sprite collection is present. The placeholder primitive drawing remains as a fallback for missing assets.

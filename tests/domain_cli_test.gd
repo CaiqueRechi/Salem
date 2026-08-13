@@ -33,6 +33,7 @@ func _test_weighted_state_selection() -> void:
 	stats.mood = "sleepy"
 	var state: String = config.calculate_next_state("idle", stats, personality, "night", rng)
 	_expect(PetBehaviourConfig.STATES.has(state), "FSM should select a known state.")
+	_expect(PetBehaviourConfig.STATES.has("judge"), "FSM should expose the judgement animation state.")
 
 func _test_random_event_conditions() -> void:
 	var event = RandomEvent.new("void", 1.0, 10.0, ["curious"], ["late_night"])
