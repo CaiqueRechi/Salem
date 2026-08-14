@@ -11,9 +11,9 @@ func setup(unlock_manager) -> void:
 	for child in get_children():
 		child.queue_free()
 	_objects.clear()
-	_add_if_unlocked(unlock_manager, "cardboard_box", "Box", "enter_box", Vector2(72, 212), Color("#D4A047"))
-	_add_if_unlocked(unlock_manager, "laptop", "Laptop", "code", Vector2(206, 220), Color("#533D64"))
-	_add_if_unlocked(unlock_manager, "cat_bed", "Bed", "sleep_bed", Vector2(326, 218), Color("#DB633A"))
+	_add_if_unlocked(unlock_manager, "cardboard_box", "Box", "enter_box", Vector2(65, 222), Color("#D4A047"))
+	_add_if_unlocked(unlock_manager, "laptop", "Laptop", "code", Vector2(210, 222), Color("#8B6AA0"))
+	_add_if_unlocked(unlock_manager, "cat_bed", "Bed", "sleep_bed", Vector2(355, 222), Color("#DB633A"))
 
 func trigger_object_action(object_id: String) -> void:
 	var object: InteractiveObject = _objects.get(object_id)

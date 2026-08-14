@@ -40,16 +40,29 @@ var _blink_timer := 0.0
 var _eyes_closed := false
 var _sprite := AnimatedSprite2D.new()
 var _uses_sprite_frames := false
+var _motion_time := 0.0
 
 func _ready() -> void:
 	_sprite.centered = true
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_sprite.scale = Vector2.ONE * 1.28
 	add_child(_sprite)
 	_uses_sprite_frames = _load_sprite_frames()
 	_sprite.visible = _uses_sprite_frames
 	_play_animation()
 
 func _process(delta: float) -> void:
+	_motion_time += delta
+	var bob_speed := 1.2
+	var bob_amount := 1.0
+	if state_id == "walk" or state_id == "play":
+		bob_speed = 5.5
+		bob_amount = 2.0
+	elif state_id == "sleep":
+		bob_speed = 0.65
+		bob_amount = 0.45
+	_sprite.position.y = sin(_motion_time * bob_speed) * bob_amount
+	queue_redraw()
 	if _uses_sprite_frames:
 		return
 	if state_id == "sleep":
@@ -60,7 +73,15 @@ func _process(delta: float) -> void:
 		_blink_timer = 0.12 if _eyes_closed else randf_range(2.0, 5.0)
 		queue_redraw()
 
+func set_animations_enabled(enabled: bool) -> void:
+	set_process(enabled)
+	_sprite.speed_scale = 1.0 if enabled else 0.0
+	if not enabled:
+		_sprite.position = Vector2.ZERO
+		queue_redraw()
+
 func _draw() -> void:
+	_draw_soft_shadow()
 	if _uses_sprite_frames:
 		return
 	var body_color := Color("#533D64")
@@ -137,6 +158,13 @@ func _load_sprite_frames() -> bool:
 	if loaded_any:
 		_sprite.sprite_frames = frames
 	return loaded_any
+
+func _draw_soft_shadow() -> void:
+	var points := PackedVector2Array()
+	for index in range(24):
+		var angle := TAU * float(index) / 24.0
+		points.append(Vector2(cos(angle) * 30.0, 30.0 + sin(angle) * 7.0))
+	draw_colored_polygon(points, Color(0.03, 0.02, 0.04, 0.20))
 
 func _load_texture(resource_path: String) -> Texture2D:
 	var image := Image.new()
