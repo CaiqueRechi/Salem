@@ -16,8 +16,6 @@ var state_machine := PetStateMachine.new()
 
 var _view := SalemView.new()
 var _interaction_area := Area2D.new()
-var _dragging := false
-var _drag_offset := Vector2.ZERO
 var _stat_timer := Timer.new()
 
 func setup(time_service: Node) -> void:
@@ -69,6 +67,9 @@ func set_mood(mood: String) -> void:
 	stats.mood_changed.emit(previous, mood)
 	_on_stats_changed(stats)
 
+func set_animations_enabled(enabled: bool) -> void:
+	_view.set_animations_enabled(enabled)
+
 func _setup_interaction_area() -> void:
 	var collision := CollisionShape2D.new()
 	var shape := RectangleShape2D.new()
@@ -94,6 +95,7 @@ func _on_state_changed(_previous_state: String, next_state: String) -> void:
 		var target_x := clampf(position.x + randf_range(-80.0, 80.0), 60.0, 360.0)
 		var tween := create_tween()
 		tween.tween_property(self, "position:x", target_x, 2.2).set_trans(Tween.TRANS_SINE)
+		tween.tween_callback(func() -> void: moved.emit(position))
 	elif next_state == "sleep":
 		stats.rest(4.0, personality)
 
@@ -117,14 +119,8 @@ func _on_developer_event(event_id: String, _payload: Dictionary) -> void:
 			force_state("stretch")
 
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		_dragging = event.pressed
-		_drag_offset = get_global_mouse_position() - global_position
-		if not event.pressed:
-			moved.emit(position)
-	elif event is InputEventMouseMotion and _dragging:
-		position = get_global_mouse_position() - _drag_offset
-		moved.emit(position)
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		EventBus.emit_notification("Drag the window to take Salem somewhere cozy.")
 
 func _vector_from_array(value: Variant) -> Vector2:
 	if typeof(value) == TYPE_ARRAY and value.size() >= 2:

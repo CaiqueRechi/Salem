@@ -19,6 +19,7 @@ const InteractionMenu = preload("res://src/ui/interaction_menu.gd")
 const SettingsMenu = preload("res://src/ui/settings_menu.gd")
 const DebugPanel = preload("res://src/ui/debug_panel.gd")
 const StatusHud = preload("res://src/ui/status_hud.gd")
+const WindowChrome = preload("res://src/ui/window_chrome.gd")
 
 var settings
 var time_service
@@ -37,6 +38,7 @@ var _interaction_menu
 var _settings_menu
 var _debug_panel
 var _status_hud
+var _window_chrome
 var _cozy_timer := Timer.new()
 var _save_debounce := Timer.new()
 
@@ -57,7 +59,9 @@ func _ready() -> void:
 	_settings_menu = SettingsMenu.new()
 	_debug_panel = DebugPanel.new()
 	_status_hud = StatusHud.new()
+	_window_chrome = WindowChrome.new()
 
+	add_child(_window_chrome)
 	add_child(time_service)
 	add_child(window_manager)
 	add_child(cozy_points)
@@ -82,6 +86,8 @@ func _ready() -> void:
 	pet.setup(time_service)
 	pet.apply_save(data.get("pet", {}))
 	pet.scale = Vector2.ONE * settings.pet_scale
+	pet.set_animations_enabled(settings.animations_enabled)
+	_window_chrome.apply_settings(settings)
 	_update_interactive_region()
 
 	random_event_manager.setup(pet.stats, time_service)
@@ -115,9 +121,11 @@ func _setup_ui() -> void:
 	add_child(_settings_menu)
 	add_child(_debug_panel)
 	_settings_menu.bind(settings)
+	_status_hud.set_values(cozy_points.total, pet.stats.mood)
+	_window_chrome.close_requested.connect(_close_application)
 
 	_interaction_menu.action_selected.connect(pet.interact)
-	_interaction_menu.settings_requested.connect(func() -> void: _settings_menu.visible = true)
+	_interaction_menu.settings_requested.connect(_settings_menu.open)
 	_settings_menu.settings_updated.connect(_on_settings_updated)
 	_settings_menu.reset_position_requested.connect(_reset_position)
 	_settings_menu.reset_save_requested.connect(reset_save)
@@ -158,11 +166,25 @@ func _connect_events() -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 		_interaction_menu.show_at(get_viewport().get_mouse_position())
+		return
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed and _can_begin_window_drag():
+			window_manager.begin_drag()
+		elif not event.pressed:
+			if window_manager.end_drag():
+				_queue_save()
+	elif event is InputEventMouseMotion and window_manager.is_dragging():
+		if event.button_mask & MOUSE_BUTTON_MASK_LEFT:
+			window_manager.update_drag()
+		else:
+			window_manager.end_drag()
 
 func _on_settings_updated(updated_settings) -> void:
 	settings = updated_settings
 	pet.scale = Vector2.ONE * settings.pet_scale
+	pet.set_animations_enabled(settings.animations_enabled)
 	window_manager.apply_settings(settings)
+	_window_chrome.apply_settings(settings)
 	pomodoro.apply_settings(settings)
 	audio_service.apply_settings(settings)
 	_update_interactive_region()
@@ -173,7 +195,7 @@ func _on_random_event(event_id: String) -> void:
 		"zoomies":
 			pet.force_state("walk")
 			var tween := create_tween()
-			tween.tween_property(pet, "position:x", 380.0 if pet.position.x < 210.0 else 40.0, 0.65)
+			tween.tween_property(pet, "position:x", 350.0 if pet.position.x < 210.0 else 70.0, 0.65)
 			tween.tween_callback(_update_interactive_region)
 			cozy_points.add_points(3)
 			EventBus.emit_notification("Salem found the zoomies.")
@@ -213,6 +235,14 @@ func _reset_position() -> void:
 	_update_interactive_region()
 	_queue_save()
 
+func _can_begin_window_drag() -> bool:
+	var hovered := get_viewport().gui_get_hovered_control()
+	return hovered == null or hovered.mouse_filter == Control.MOUSE_FILTER_IGNORE
+
+func _close_application() -> void:
+	save_now()
+	get_tree().quit()
+
 func _queue_save() -> void:
 	if _save_debounce.is_inside_tree():
 		_save_debounce.start()
@@ -243,6 +273,7 @@ func _apply_runtime_data(data: Dictionary) -> void:
 	if pet.is_inside_tree():
 		pet.apply_save(data.get("pet", {}))
 		pet.scale = Vector2.ONE * settings.pet_scale
+		pet.set_animations_enabled(settings.animations_enabled)
 	if object_manager.is_inside_tree():
 		object_manager.setup(unlock_manager)
 	if window_manager.is_inside_tree():
@@ -252,6 +283,8 @@ func _apply_runtime_data(data: Dictionary) -> void:
 		pomodoro.apply_settings(settings)
 	if audio_service.is_inside_tree():
 		audio_service.apply_settings(settings)
+	if _window_chrome.is_inside_tree():
+		_window_chrome.apply_settings(settings)
 	if _settings_menu.is_inside_tree():
 		_settings_menu.bind(settings)
 	_update_interactive_region()

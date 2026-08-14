@@ -6,10 +6,15 @@ The MVP configures the app as a small desktop overlay:
 - transparent background
 - always on top
 - fixed small size
-- draggable pet
+- custom in-app chrome with a dedicated close button
+- whole-window dragging from any free surface
 - saved window and pet position
 
 The implementation lives in `DesktopWindowManager`.
+
+The borderless window is moved manually from screen-space mouse deltas so the
+entire composition travels together. Interactive controls opt out of dragging,
+which keeps the close button, menus, toggles, and sliders usable.
 
 ## Mouse Passthrough
 

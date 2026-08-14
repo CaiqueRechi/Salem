@@ -55,9 +55,9 @@ godot --headless --path . --script res://tests/domain_cli_test.gd
 
 ## Controls
 
-- Left-drag Salem to move him.
+- Left-drag any free area to move the whole Salem.exe window.
 - Right-click anywhere in the window to open the interaction menu.
-- Use the debug panel in debug builds to force moods, states, events, and developer reactions.
+- Press `F12` in debug builds to open the developer panel and force moods, states, events, and reactions.
 
 ## Architecture
 

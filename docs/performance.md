@@ -15,12 +15,17 @@ The following systems use timers:
 
 ## Lightweight Processing
 
-Only two MVP scripts use `_process()`:
+The small visual layer also uses `_process()` for lightweight motion:
 
-- `SalemView` for blink timing.
+- `SalemView` for blink timing and a subtle state-aware bob.
 - `RandomEventManager` for event cooldown accumulation.
+- `WindowChrome` for the slow ambient glow and awake indicator.
+- `InteractiveObject` for short hover transitions.
 
-Both are intentionally tiny. If profiling later shows idle CPU cost, cooldowns can move to timestamp comparisons during timer rolls.
+These loops only update a handful of values in a 420×260 canvas. If profiling
+later shows idle CPU cost, decorative motion can be throttled and cooldowns can
+move to timestamp comparisons during timer rolls. Disabling animations already
+stops the chrome and Salem motion loops.
 
 ## Rendering
 
